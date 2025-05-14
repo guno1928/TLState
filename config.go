@@ -89,3 +89,27 @@ func ConfigFromDER(serverCert, serverKey []byte) (*Config, error) {
 	config.createCertificateRecord()
 	return &config, nil
 }
+
+func (c *Config) createGertificateRecord() {
+
+	certMsg := []byte{
+		0x00,
+	}
+
+	certEntryLen := 3 + len(c.ServerCert) + 2
+
+	certMsg = append(certMsg,
+		byte(certEntryLen>>16),
+		byte(certEntryLen>>8),
+		byte(certEntryLen))
+
+	certMsg = append(certMsg,
+		byte(len(c.ServerCert)>>16),
+		byte(len(c.ServerCert)>>8),
+		byte(len(c.ServerCert)))
+	certMsg = append(certMsg, c.ServerCert...)
+
+	certMsg = append(certMsg, 0x00, 0x00)
+
+	c.CertificateRecord = certMsg
+}
