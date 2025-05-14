@@ -421,13 +421,17 @@ func (t *TLState) generateCertificateVerifyRecord(out *byteBuffer.ByteBuffer) (R
 	out.B = out.B[:outLength]
 	out.Write(toSign[:])
 
-	signature, err := rsa.SignPSS(
-		rand.Reader,
-		t.Config.ParsedKey,
-		crypto.SHA256,
-		out.B[outLength:],
-		&rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthEqualsHash, Hash: crypto.SHA256},
-	)
+	rsaKey, ok := t.Config.ParsedKey.(*rsa.PrivateKey)
+if !ok {
+    return None, fmt.Errorf("expected RSA private key, got %T", t.Config.ParsedKey)
+}
+signature, err := rsa.SignPSS(
+    rand.Reader,
+    rsaKey,
+    crypto.SHA256,
+    out.B[outLength:],
+    &rsa.PSSOptions{SaltLength: rsa.PSSSaltLengthEqualsHash, Hash: crypto.SHA256},
+)
 	if err != nil {
 		return None, err
 	}
