@@ -90,7 +90,7 @@ func ConfigFromDER(serverCert, serverKey []byte) (*Config, error) {
 	return &config, nil
 }
 
-func (c *Config) createGertificateRecord() {
+func (c *Config) createCertificateRecord() {
 
 	certMsg := []byte{
 		0x00,
